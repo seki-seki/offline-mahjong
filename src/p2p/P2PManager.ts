@@ -7,6 +7,8 @@ import {
   MessageHandler,
   P2PConfig 
 } from './types';
+import { P2PError, ErrorCode, TimeoutError } from '../utils/errors';
+import { logger } from '../utils/logger';
 
 export class P2PManager {
   private peer: Peer | null = null;

@@ -6,6 +6,8 @@ import {
   ConnectionStatus,
   MessageHandler 
 } from './types';
+import { BaseError, getUserFriendlyMessage } from '../utils/errors';
+import { logger } from '../utils/logger';
 
 export interface P2PState {
   isConnected: boolean;
@@ -16,7 +18,9 @@ export interface P2PState {
   error: string | null;
 }
 
-export interface UseP2PReturn extends P2PState {
+export interface UseP2PReturn {
+  state: P2PState;
+  error: string | null;
   p2p: P2PManager | null;
   initialize: (peerId?: string) => Promise<void>;
   connectToPeer: (peerId: string) => Promise<void>;
@@ -66,9 +70,16 @@ export function useP2P(): UseP2PReturn {
       setupEventHandlers(manager);
       
     } catch (error) {
+      const errorMessage = error instanceof BaseError 
+        ? getUserFriendlyMessage(error)
+        : error instanceof Error 
+        ? error.message 
+        : 'Failed to initialize P2P';
+      
+      logger.error('Failed to initialize P2P', { error });
       setState(prev => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'Failed to initialize P2P'
+        error: errorMessage
       }));
       throw error;
     }
@@ -84,9 +95,16 @@ export function useP2P(): UseP2PReturn {
       setState(prev => ({ ...prev, error: null }));
       await managerRef.current.connectToPeer(peerId);
     } catch (error) {
+      const errorMessage = error instanceof BaseError 
+        ? getUserFriendlyMessage(error)
+        : error instanceof Error 
+        ? error.message 
+        : 'Failed to connect to peer';
+      
+      logger.error('Failed to connect to peer', { error, peerId });
       setState(prev => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'Failed to connect to peer'
+        error: errorMessage
       }));
       throw error;
     }
@@ -226,9 +244,9 @@ export function useP2P(): UseP2PReturn {
   }, [initialize, connectToPeer]);
 
   return {
-    ...state,
+    state,
+    error: state.error,
     p2p: managerRef.current,
-    peerId: state.peerId,
     initialize,
     connectToPeer,
     sendMessage,
