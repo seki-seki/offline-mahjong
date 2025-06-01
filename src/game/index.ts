@@ -1,5 +1,10 @@
+// Exports from the game management branch
+export { GameManager } from './GameManager';
+export { TileManager } from './TileManager';
+export { ActionValidator } from './ActionValidator';
+export { HandEvaluator } from './HandEvaluator';
+
 // Exports from the main branch
-export * from '../types/tile';
 export * from '../utils/tileGenerator';
 export * from './tileManager';
 
@@ -7,6 +12,11 @@ export * from './tileManager';
 export { ActionLogService } from './actionLog';
 export { VerificationManager } from './verificationManager';
 export { PostGameVerificationService } from './postGameVerification';
+
+// Type exports
+export * from '../types/tile';
+export * from '../types/player';
+export * from '../types/game';
 
 export type {
   PlayerID,
