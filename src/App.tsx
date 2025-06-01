@@ -1,3 +1,4 @@
+import { SignatureDemo } from './components/SignatureDemo'
 import './App.css'
 import { ShuffleDemo } from './components/ShuffleDemo'
 import { P2PConnection } from './components/P2PConnection'
@@ -10,6 +11,8 @@ function App() {
       <ShuffleDemo />
       <h2>P2P接続</h2>
       <P2PConnection />
+      <h2>署名・検証システム</h2>
+      <SignatureDemo />
     </>
   )
 }

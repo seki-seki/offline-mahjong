@@ -8,6 +8,12 @@ export { CryptoService } from './CryptoService';
 export { TileShuffleService } from './TileShuffleService';
 export { GameSession } from './GameSession';
 export type { Player } from './GameSession';
+
+// Exports from the signature branch
+export { KeyManager } from './keys';
+export { SignatureService } from './signatures';
+export { DecryptionProofService } from './decryptionProof';
+
 export * from '../types/crypto';
 
 import { EncryptedDeck, PlayerKeys } from '../types';
