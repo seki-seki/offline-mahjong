@@ -1,4 +1,4 @@
-import { GameState, GameConfig, DEFAULT_GAME_CONFIG, PendingAction, ACTION_PRIORITY, getNextPlayerIndex, GameEvent, EndCondition } from '../types/game';
+import { GameState, GameConfig, DEFAULT_GAME_CONFIG, PendingAction, ACTION_PRIORITY, getNextPlayerIndex, GameEvent, EndCondition, GameAction } from '../types/game';
 import { Player, PlayerAction, ActionRequest, ActionResponse, PlayerPosition } from '../types/player';
 import { Tile } from '../types/tile';
 import { TileManager } from './TileManager';
@@ -13,6 +13,7 @@ export class GameManager {
   private handEvaluator: HandEvaluator;
   private eventHandlers: Map<string, (event: GameEvent) => void>;
   private timeoutHandles: Map<string, NodeJS.Timeout>;
+  private playerCount: number = 4;
 
   constructor(gameId: string, players: Player[], config?: Partial<GameConfig>) {
     this.config = { ...DEFAULT_GAME_CONFIG, ...config };
@@ -26,6 +27,10 @@ export class GameManager {
   }
 
   private initializeGameState(gameId: string, players: Player[]): GameState {
+    const positions = this.playerCount === 3 
+      ? (['east', 'south', 'west'] as PlayerPosition[])
+      : (['east', 'south', 'west', 'north'] as PlayerPosition[]);
+    
     return {
       id: gameId,
       phase: 'waiting',
@@ -34,9 +39,9 @@ export class GameManager {
       riichiBets: 0,
       currentPlayerIndex: 0,
       currentTurnStartTime: 0,
-      players: players.map((p, i) => ({
+      players: players.slice(0, this.playerCount).map((p, i) => ({
         ...p,
-        position: (['east', 'south', 'west', 'north'] as PlayerPosition[])[i],
+        position: positions[i],
         points: this.config.startingPoints,
         hand: [],
         discards: [],
@@ -48,7 +53,13 @@ export class GameManager {
       uraDora: [],
       deadWall: [],
       pendingActions: [],
-      turnTimeLimit: this.config.turnTimeLimit
+      turnTimeLimit: this.config.turnTimeLimit,
+      // Additional fields for P2P synchronization
+      currentTurn: 0,
+      currentPlayer: players[0]?.id,
+      wallTiles: [],
+      actionHistory: [],
+      lastActionTime: Date.now()
     };
   }
 
@@ -492,5 +503,56 @@ export class GameManager {
         hand: p.id === playerId ? p.hand : p.hand.map(() => null)
       }))
     };
+  }
+
+  public setState(newState: GameState): void {
+    this.gameState = { ...newState };
+    this.gameState.lastActionTime = Date.now();
+  }
+
+  public async applyAction(action: GameAction): Promise<void> {
+    // Store action in history
+    if (!this.gameState.actionHistory) {
+      this.gameState.actionHistory = [];
+    }
+    this.gameState.actionHistory.push(action);
+    this.gameState.lastActionTime = action.timestamp;
+    this.gameState.currentTurn++;
+
+    // Process the action based on its type
+    const actionRequest: ActionRequest = {
+      playerId: action.playerId,
+      action: this.mapActionTypeToPlayerAction(action.type),
+      tile: action.data as any
+    };
+
+    await this.handleAction(actionRequest);
+  }
+
+  private mapActionTypeToPlayerAction(actionType: string): PlayerAction {
+    const mapping: Record<string, PlayerAction> = {
+      'DISCARD': 'discard',
+      'PON': 'pon',
+      'CHI': 'chi',
+      'KAN': 'kan',
+      'RIICHI': 'discard', // Riichi involves discarding
+      'WIN': 'ron',
+      'TSUMO': 'tsumo-win',
+      'PASS': 'pass'
+    };
+    return mapping[actionType] || 'pass';
+  }
+
+  public setPlayerCount(count: 3 | 4): void {
+    if (this.gameState.phase !== 'waiting') {
+      throw new Error('Cannot change player count after game has started');
+    }
+    this.playerCount = count;
+    // Re-initialize with new player count
+    this.gameState = this.initializeGameState(this.gameState.id, this.gameState.players);
+  }
+
+  public getPlayerCount(): number {
+    return this.playerCount;
   }
 }

@@ -7,6 +7,8 @@ import {
   MessageHandler,
   P2PConfig 
 } from './types';
+import { P2PError, ErrorCode, TimeoutError } from '../utils/errors';
+import { logger } from '../utils/logger';
 
 export class P2PManager {
   private peer: Peer | null = null;
@@ -34,55 +36,121 @@ export class P2PManager {
   async initialize(peerId?: string): Promise<string> {
     return new Promise((resolve, reject) => {
       try {
+        logger.info('Initializing P2P connection', { peerId, isHost: !peerId });
+        
         // Use provided ID or generate new one
         this.peer = peerId ? new Peer(peerId) : new Peer();
         
+        // Set timeout for initialization
+        const initTimeout = setTimeout(() => {
+          const error = new TimeoutError(
+            'P2P initialization timeout',
+            'initialize',
+            this.config.messageTimeout
+          );
+          logger.error('P2P initialization timeout', error);
+          reject(error);
+        }, this.config.messageTimeout);
+        
         this.peer.on('open', (id) => {
+          clearTimeout(initTimeout);
           this.myId = id;
           this.isHost = !peerId;
-          console.log(`P2P initialized with ID: ${id}`);
+          logger.info(`P2P initialized successfully`, { id, isHost: this.isHost });
           resolve(id);
         });
 
         this.peer.on('connection', (conn) => {
+          logger.debug('Incoming connection', { peerId: conn.peer });
           this.handleIncomingConnection(conn);
         });
 
         this.peer.on('error', (err) => {
-          console.error('Peer error:', err);
-          reject(err);
+          clearTimeout(initTimeout);
+          const error = new P2PError(
+            ErrorCode.P2P_CONNECTION_FAILED,
+            `Peer error: ${err.message || err}`,
+            { originalError: err }
+          );
+          logger.error('Peer error', error);
+          reject(error);
         });
 
         this.peer.on('disconnected', () => {
-          console.warn('Disconnected from signaling server');
+          logger.warn('Disconnected from signaling server');
           this.attemptReconnect();
         });
 
       } catch (error) {
-        reject(error);
+        const p2pError = new P2PError(
+          ErrorCode.P2P_CONNECTION_FAILED,
+          `Failed to initialize P2P: ${error}`,
+          { originalError: error }
+        );
+        logger.error('P2P initialization failed', p2pError);
+        reject(p2pError);
       }
     });
   }
 
   // Connect to another peer
   async connectToPeer(peerId: string): Promise<void> {
+<<<<<<< HEAD
     if (!this.peer) throw new Error('P2P not initialized');
     if (this.connections.has(peerId)) return;
 
     return new Promise((resolve, reject) => {
+=======
+    if (!this.peer) {
+      throw new P2PError(
+        ErrorCode.P2P_CONNECTION_FAILED,
+        'P2P not initialized',
+        { peerId }
+      );
+    }
+    
+    if (this.connections.has(peerId)) {
+      logger.debug('Already connected to peer', { peerId });
+      return;
+    }
+
+    return new Promise((resolve, reject) => {
+      logger.info('Connecting to peer', { peerId });
+      
       const conn = this.peer!.connect(peerId, {
         reliable: true,
         serialization: 'json'
       });
 
+      const connectionTimeout = setTimeout(() => {
+        if (!conn.open) {
+          conn.close();
+          const error = new TimeoutError(
+            `Connection timeout for peer ${peerId}`,
+            'connectToPeer',
+            this.config.messageTimeout
+          );
+          logger.error('Connection timeout', error, { peerId });
+          reject(error);
+        }
+      }, this.config.messageTimeout);
+
       conn.on('open', () => {
+        clearTimeout(connectionTimeout);
+        logger.info('Connected to peer successfully', { peerId });
         this.setupConnection(conn);
         resolve();
       });
 
       conn.on('error', (err) => {
-        console.error(`Connection error with ${peerId}:`, err);
-        reject(err);
+        clearTimeout(connectionTimeout);
+        const error = new P2PError(
+          ErrorCode.P2P_CONNECTION_FAILED,
+          `Connection error with ${peerId}: ${err.message || err}`,
+          { originalError: err, peerId }
+        );
+        logger.error('Connection error', error);
+        reject(error);
       });
 
       // Timeout for connection
@@ -92,6 +160,16 @@ export class P2PManager {
           reject(new Error(`Connection timeout for peer ${peerId}`));
         }
       }, this.config.messageTimeout);
+=======
+        clearTimeout(connectionTimeout);
+        const error = new P2PError(
+          ErrorCode.P2P_CONNECTION_FAILED,
+          `Connection error with ${peerId}: ${err}`,
+          { peerId, originalError: err }
+        );
+        logger.error('Connection error', error);
+        reject(error);
+      });
     });
   }
 

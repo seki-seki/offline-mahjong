@@ -7,10 +7,14 @@ import GameStateDisplay from './components/GameStateDisplay/GameStateDisplay';
 import KeyboardHelp from './components/KeyboardHelp/KeyboardHelp';
 import { getDndBackend, getDndBackendOptions } from './utils/dndBackend';
 import { useKeyboardShortcuts, GAME_SHORTCUTS } from './hooks/useKeyboardShortcuts';
+import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
+import { DebugPanel } from './components/DebugPanel/DebugPanel';
+import { useP2P } from './p2p/useP2P';
 import './App.css';
 
 function App() {
   const currentPlayer: Wind = 'E';
+  const { state: p2pState, error: p2pError } = useP2P();
   
   const generateMockTiles = (count: number, startId: number): Tile[] => {
     const tiles: Tile[] = [];
@@ -121,7 +125,8 @@ function App() {
   }, true);
 
   return (
-    <DndProvider backend={getDndBackend()} options={getDndBackendOptions()}>
+    <ErrorBoundary>
+      <DndProvider backend={getDndBackend()} options={getDndBackendOptions()}>
       <div className="app">
         <MahjongTable
           gameState={gameState}
@@ -146,8 +151,21 @@ function App() {
           isVisible={showKeyboardHelp}
           onClose={() => setShowKeyboardHelp(false)}
         />
+        
+        {p2pError && (
+          <div className="error-notification">
+            {p2pError}
+          </div>
+        )}
+        
+        <DebugPanel 
+          gameState={gameState}
+          p2pState={p2pState}
+          showTileInfo={process.env.NODE_ENV === 'development'}
+        />
       </div>
     </DndProvider>
+    </ErrorBoundary>
   );
 }
 
