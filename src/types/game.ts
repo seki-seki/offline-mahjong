@@ -1,0 +1,121 @@
+export type PlayerID = string;
+
+export enum ActionType {
+  GAME_START = 'GAME_START',
+  SHUFFLE = 'SHUFFLE',
+  DRAW = 'DRAW',
+  DISCARD = 'DISCARD',
+  PON = 'PON',
+  CHI = 'CHI',
+  KAN = 'KAN',
+  RIICHI = 'RIICHI',
+  WIN = 'WIN',
+  DECRYPT_PROOF = 'DECRYPT_PROOF'
+}
+
+export interface GameAction {
+  id: string;
+  type: ActionType;
+  playerId: PlayerID;
+  timestamp: number;
+  data: unknown;
+  signature?: string;
+}
+
+export interface GameStartAction extends GameAction {
+  type: ActionType.GAME_START;
+  data: {
+    players: PlayerID[];
+    seed?: string;
+  };
+}
+
+export interface ShuffleAction extends GameAction {
+  type: ActionType.SHUFFLE;
+  data: {
+    shuffledTiles: string[]; // Encrypted tiles
+    proof?: string;
+  };
+}
+
+export interface DrawAction extends GameAction {
+  type: ActionType.DRAW;
+  data: {
+    tileIndex: number;
+    encryptedTile: string;
+  };
+}
+
+export interface DiscardAction extends GameAction {
+  type: ActionType.DISCARD;
+  data: {
+    tileIndex: number;
+    tile: string;
+  };
+}
+
+export interface PonAction extends GameAction {
+  type: ActionType.PON;
+  data: {
+    targetPlayerId: PlayerID;
+    discardedTile: string;
+    handTiles: number[]; // Indices of tiles in hand
+  };
+}
+
+export interface ChiAction extends GameAction {
+  type: ActionType.CHI;
+  data: {
+    targetPlayerId: PlayerID;
+    discardedTile: string;
+    handTiles: number[]; // Indices of tiles in hand
+  };
+}
+
+export interface KanAction extends GameAction {
+  type: ActionType.KAN;
+  data: {
+    type: 'closed' | 'open' | 'added';
+    tiles: number[] | string[]; // Indices for closed, tiles for open/added
+    targetPlayerId?: PlayerID; // For open kan
+  };
+}
+
+export interface RiichiAction extends GameAction {
+  type: ActionType.RIICHI;
+  data: {
+    discardTileIndex: number;
+  };
+}
+
+export interface WinAction extends GameAction {
+  type: ActionType.WIN;
+  data: {
+    winType: 'tsumo' | 'ron';
+    targetPlayerId?: PlayerID; // For ron
+    handTiles: string[];
+    winTile: string;
+    score: number;
+  };
+}
+
+export interface DecryptProofAction extends GameAction {
+  type: ActionType.DECRYPT_PROOF;
+  data: {
+    tileIndex: number;
+    decryptedTile: string;
+    proof: string;
+  };
+}
+
+export type SpecificGameAction = 
+  | GameStartAction
+  | ShuffleAction
+  | DrawAction
+  | DiscardAction
+  | PonAction
+  | ChiAction
+  | KanAction
+  | RiichiAction
+  | WinAction
+  | DecryptProofAction;
