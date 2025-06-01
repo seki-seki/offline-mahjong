@@ -1,6 +1,14 @@
+// Exports from the shuffle branch
 export * from './utils';
 export * from './encryption';
 export * from './shuffle';
+
+// Exports from the main branch
+export { CryptoService } from './CryptoService';
+export { TileShuffleService } from './TileShuffleService';
+export { GameSession } from './GameSession';
+export type { Player } from './GameSession';
+export * from '../types/crypto';
 
 import { EncryptedDeck, PlayerKeys } from '../types';
 import { generateFullTileSet } from '../game/tiles';
