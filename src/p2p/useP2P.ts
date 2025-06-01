@@ -6,6 +6,8 @@ import {
   ConnectionStatus,
   MessageHandler 
 } from './types';
+import { BaseError, getUserFriendlyMessage } from '../utils/errors';
+import { logger } from '../utils/logger';
 
 export interface P2PState {
   isConnected: boolean;
@@ -16,7 +18,9 @@ export interface P2PState {
   error: string | null;
 }
 
-export interface UseP2PReturn extends P2PState {
+export interface UseP2PReturn {
+  state: P2PState;
+  error: string | null;
   initialize: (peerId?: string) => Promise<void>;
   connectToPeer: (peerId: string) => Promise<void>;
   sendMessage: (type: MessageType, data: any, targetPeerId?: string) => void;
@@ -63,9 +67,17 @@ export function useP2P(): UseP2PReturn {
       setupEventHandlers(manager);
       
     } catch (error) {
+      const err = error as any;
+      logger.error('P2P initialization failed', err);
+      const errorMessage = err instanceof BaseError 
+        ? getUserFriendlyMessage(err)
+        : err instanceof Error 
+        ? err.message 
+        : 'P2P接続の初期化に失敗しました';
+        
       setState(prev => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'Failed to initialize P2P'
+        error: errorMessage
       }));
       throw error;
     }
@@ -81,9 +93,17 @@ export function useP2P(): UseP2PReturn {
       setState(prev => ({ ...prev, error: null }));
       await managerRef.current.connectToPeer(peerId);
     } catch (error) {
+      const err = error as any;
+      logger.error('Failed to connect to peer', err, { peerId });
+      const errorMessage = err instanceof BaseError 
+        ? getUserFriendlyMessage(err)
+        : err instanceof Error 
+        ? err.message 
+        : 'ピアへの接続に失敗しました';
+        
       setState(prev => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'Failed to connect to peer'
+        error: errorMessage
       }));
       throw error;
     }
@@ -92,10 +112,19 @@ export function useP2P(): UseP2PReturn {
   // Send message
   const sendMessage = useCallback((type: MessageType, data: any, targetPeerId?: string) => {
     if (!managerRef.current) {
-      console.error('P2P not initialized');
+      logger.error('P2P not initialized');
       return;
     }
-    managerRef.current.sendMessage(type, data, targetPeerId);
+    try {
+      managerRef.current.sendMessage(type, data, targetPeerId);
+    } catch (error) {
+      const err = error as any;
+      logger.error('Failed to send message', err, { type, targetPeerId });
+      const errorMessage = err instanceof BaseError 
+        ? getUserFriendlyMessage(err)
+        : 'メッセージの送信に失敗しました';
+      setState(prev => ({ ...prev, error: errorMessage }));
+    }
   }, []);
 
   // Broadcast message
@@ -155,6 +184,12 @@ export function useP2P(): UseP2PReturn {
       updateConnectionStatus();
     });
 
+    // Handle player reconnect
+    manager.on(MessageType.PLAYER_RECONNECT, () => {
+      updatePlayers();
+      updateConnectionStatus();
+    });
+
     // Handle connection status updates
     manager.on(MessageType.CONNECTION_STATUS, () => {
       updatePlayers();
@@ -201,7 +236,15 @@ export function useP2P(): UseP2PReturn {
   }, [destroy]);
 
   return {
-    ...state,
+    state: {
+      isConnected: state.isConnected,
+      peerId: state.peerId,
+      isHost: state.isHost,
+      players: state.players,
+      connectionStatus: state.connectionStatus,
+      error: state.error
+    },
+    error: state.error,
     initialize,
     connectToPeer,
     sendMessage,

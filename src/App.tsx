@@ -3,10 +3,14 @@ import { GameState, Wind, Action, Tile } from './types/mahjong';
 import MahjongTable from './components/MahjongTable/MahjongTable';
 import ActionButtons from './components/ActionButtons/ActionButtons';
 import GameStateDisplay from './components/GameStateDisplay/GameStateDisplay';
+import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
+import { DebugPanel } from './components/DebugPanel/DebugPanel';
+import { useP2P } from './p2p/useP2P';
 import './App.css';
 
 function App() {
   const currentPlayer: Wind = 'E';
+  const { state: p2pState, error: p2pError } = useP2P();
   
   const generateMockTiles = (count: number, startId: number): Tile[] => {
     const tiles: Tile[] = [];
@@ -101,26 +105,40 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <MahjongTable
-        gameState={gameState}
-        currentPlayer={currentPlayer}
-        onAction={handleAction}
-      />
-      
-      <GameStateDisplay
-        gameState={gameState}
-        currentPlayer={currentPlayer}
-      />
-      
-      {showActions && (
-        <ActionButtons
-          availableActions={availableActions}
-          onAction={handleActionButtonClick}
-          timeLeft={5}
+    <ErrorBoundary>
+      <div className="app">
+        <MahjongTable
+          gameState={gameState}
+          currentPlayer={currentPlayer}
+          onAction={handleAction}
         />
-      )}
-    </div>
+        
+        <GameStateDisplay
+          gameState={gameState}
+          currentPlayer={currentPlayer}
+        />
+        
+        {showActions && (
+          <ActionButtons
+            availableActions={availableActions}
+            onAction={handleActionButtonClick}
+            timeLeft={5}
+          />
+        )}
+        
+        {p2pError && (
+          <div className="error-notification">
+            {p2pError}
+          </div>
+        )}
+        
+        <DebugPanel 
+          gameState={gameState}
+          p2pState={p2pState}
+          showTileInfo={process.env.NODE_ENV === 'development'}
+        />
+      </div>
+    </ErrorBoundary>
   );
 }
 
