@@ -33,6 +33,14 @@ export interface GameState {
   endCondition?: EndCondition;
   winner?: string;
   turnTimeLimit: number;
+  // Additional fields for P2P synchronization
+  currentTurn: number;
+  currentPlayer?: string;
+  wallTiles?: Tile[];
+  drawnTile?: Tile;
+  doraIndicators?: Tile[];
+  actionHistory?: GameAction[];
+  lastActionTime?: number;
 }
 
 export interface PendingAction {

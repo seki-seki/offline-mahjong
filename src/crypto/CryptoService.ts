@@ -6,6 +6,11 @@ import {
   TileValue,
   EncryptedTile
 } from '../types/crypto';
+<<<<<<< HEAD
+=======
+import { CryptoError, ErrorCode } from '../utils/errors';
+import { logger } from '../utils/logger';
+>>>>>>> origin/main
 
 export class CryptoService {
   private static readonly ECDH_ALGORITHM = 'ECDH';
@@ -14,6 +19,7 @@ export class CryptoService {
   private static readonly AES_KEY_LENGTH = 256;
 
   static async generateKeyPair(): Promise<KeyPair> {
+<<<<<<< HEAD
     const keyPair = await crypto.subtle.generateKey(
       {
         name: this.ECDH_ALGORITHM,
@@ -24,6 +30,30 @@ export class CryptoService {
     );
 
     return keyPair;
+=======
+    try {
+      logger.debug('Generating key pair');
+      const keyPair = await crypto.subtle.generateKey(
+        {
+          name: this.ECDH_ALGORITHM,
+          namedCurve: this.CURVE,
+        },
+        true,
+        ['deriveKey']
+      );
+
+      logger.debug('Key pair generated successfully');
+      return keyPair;
+    } catch (error) {
+      const cryptoError = new CryptoError(
+        ErrorCode.CRYPTO_KEY_GENERATION_FAILED,
+        `Failed to generate key pair: ${error}`,
+        { originalError: error }
+      );
+      logger.error('Key generation failed', cryptoError);
+      throw cryptoError;
+    }
+>>>>>>> origin/main
   }
 
   static async exportKeyPair(keyPair: KeyPair): Promise<ExportedKeyPair> {
@@ -89,6 +119,7 @@ export class CryptoService {
     data: ArrayBuffer,
     recipientPublicKey: CryptoKey
   ): Promise<EncryptedData> {
+<<<<<<< HEAD
     // Generate ephemeral key pair for this encryption
     const ephemeralKeyPair = await this.generateKeyPair();
     
@@ -122,12 +153,61 @@ export class CryptoService {
       iv,
       ephemeralPublicKey,
     };
+=======
+    try {
+      logger.debug('Starting encryption', { dataSize: data.byteLength });
+      
+      // Generate ephemeral key pair for this encryption
+      const ephemeralKeyPair = await this.generateKeyPair();
+      
+      // Derive shared key
+      const sharedKey = await this.deriveSharedKey(
+        ephemeralKeyPair.privateKey,
+        recipientPublicKey
+      );
+
+      // Generate IV
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+
+      // Encrypt data
+      const ciphertext = await crypto.subtle.encrypt(
+        {
+          name: this.AES_ALGORITHM,
+          iv: iv,
+        },
+        sharedKey,
+        data
+      );
+
+      // Export ephemeral public key
+      const ephemeralPublicKey = await crypto.subtle.exportKey(
+        'jwk',
+        ephemeralKeyPair.publicKey
+      );
+
+      logger.debug('Encryption completed successfully');
+      return {
+        ciphertext,
+        iv,
+        ephemeralPublicKey,
+      };
+    } catch (error) {
+      const cryptoError = new CryptoError(
+        ErrorCode.CRYPTO_ENCRYPTION_FAILED,
+        `Encryption failed: ${error}`,
+        { originalError: error, dataSize: data.byteLength }
+      );
+      logger.error('Encryption failed', cryptoError);
+      throw cryptoError;
+    }
+>>>>>>> origin/main
   }
 
   static async decrypt(
     encryptedData: EncryptedData,
     recipientPrivateKey: CryptoKey
   ): Promise<ArrayBuffer> {
+<<<<<<< HEAD
     // Import ephemeral public key
     const ephemeralPublicKey = await this.importPublicKey(
       encryptedData.ephemeralPublicKey
@@ -150,6 +230,43 @@ export class CryptoService {
     );
 
     return plaintext;
+=======
+    try {
+      logger.debug('Starting decryption');
+      
+      // Import ephemeral public key
+      const ephemeralPublicKey = await this.importPublicKey(
+        encryptedData.ephemeralPublicKey
+      );
+
+      // Derive shared key
+      const sharedKey = await this.deriveSharedKey(
+        recipientPrivateKey,
+        ephemeralPublicKey
+      );
+
+      // Decrypt data
+      const plaintext = await crypto.subtle.decrypt(
+        {
+          name: this.AES_ALGORITHM,
+          iv: encryptedData.iv,
+        },
+        sharedKey,
+        encryptedData.ciphertext
+      );
+
+      logger.debug('Decryption completed successfully');
+      return plaintext;
+    } catch (error) {
+      const cryptoError = new CryptoError(
+        ErrorCode.CRYPTO_DECRYPTION_FAILED,
+        `Decryption failed: ${error}`,
+        { originalError: error }
+      );
+      logger.error('Decryption failed', cryptoError);
+      throw cryptoError;
+    }
+>>>>>>> origin/main
   }
 
   static serializeEncryptedData(data: EncryptedData): SerializedEncryptedData {
