@@ -1,0 +1,39 @@
+.hand-display {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.hand-display__tiles {
+  display: flex;
+  gap: 2px;
+}
+
+.hand-display__melds {
+  display: flex;
+  gap: 8px;
+  margin-left: 15px;
+}
+
+.hand-display__meld {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.hand-display--top .hand-display__tiles,
+.hand-display--top .hand-display__melds {
+  transform: rotate(180deg);
+}
+
+.hand-display--left .hand-display__tiles,
+.hand-display--left .hand-display__melds {
+  transform: rotate(-90deg);
+}
+
+.hand-display--right .hand-display__tiles,
+.hand-display--right .hand-display__melds {
+  transform: rotate(90deg);
+}
