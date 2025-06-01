@@ -1,7 +1,8 @@
 import React from 'react';
-import { GameState, Wind } from '../../types/mahjong';
+import { GameState, Wind, Tile } from '../../types/mahjong';
 import PlayerArea from '../PlayerArea/PlayerArea';
 import CenterArea from '../CenterArea/CenterArea';
+import GameInfoPanel from '../GameInfoPanel/GameInfoPanel';
 import './MahjongTable.css';
 
 interface MahjongTableProps {
@@ -22,32 +23,55 @@ const MahjongTable: React.FC<MahjongTableProps> = ({ gameState, currentPlayer, o
     return ['bottom', 'right', 'top', 'left'][relativeIndex];
   };
 
+  const getScores = () => {
+    return {
+      east: gameState.players.E.score,
+      south: gameState.players.S.score,
+      west: gameState.players.W.score,
+      north: gameState.players.N.score
+    };
+  };
+
   return (
-    <div className="mahjong-table">
-      {winds.map((wind) => {
-        const player = gameState.players[wind];
-        const position = getPlayerPosition(wind, currentPlayer);
-        const isCurrentPlayer = wind === currentPlayer;
-        const isTurn = wind === gameState.currentTurn;
+    <div className="mahjong-table-container">
+      <div className="mahjong-table">
+        {winds.map((wind) => {
+          const player = gameState.players[wind];
+          const position = getPlayerPosition(wind, currentPlayer);
+          const isCurrentPlayer = wind === currentPlayer;
+          const isTurn = wind === gameState.currentTurn;
+          
+          return (
+            <PlayerArea
+              key={wind}
+              player={player}
+              position={position}
+              isCurrentPlayer={isCurrentPlayer}
+              isTurn={isTurn}
+              turnPhase={gameState.turnPhase}
+              onAction={onAction}
+            />
+          );
+        })}
         
-        return (
-          <PlayerArea
-            key={wind}
-            player={player}
-            position={position}
-            isCurrentPlayer={isCurrentPlayer}
-            isTurn={isTurn}
-            turnPhase={gameState.turnPhase}
-            onAction={onAction}
-          />
-        );
-      })}
+        <CenterArea
+          remainingTiles={gameState.remainingTiles}
+          dora={gameState.dora}
+          round={gameState.round}
+          dealer={gameState.dealer}
+        />
+      </div>
       
-      <CenterArea
+      <GameInfoPanel
         remainingTiles={gameState.remainingTiles}
-        dora={gameState.dora}
-        round={gameState.round}
-        dealer={gameState.dealer}
+        doraIndicators={gameState.dora}
+        round={{
+          wind: gameState.round.wind,
+          number: gameState.round.number,
+          honba: gameState.honba || 0,
+          riichiBets: gameState.riichiBets || 0
+        }}
+        scores={getScores()}
       />
     </div>
   );

@@ -1,5 +1,7 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Action } from '../../types/mahjong';
+import { GAME_SHORTCUTS } from '../../hooks/useKeyboardShortcuts';
 import './ActionButtons.css';
 
 interface ActionButtonsProps {
@@ -23,6 +25,16 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
     riichi: 'リーチ'
   };
 
+  const actionShortcuts: Record<Action, string> = {
+    tsumo: GAME_SHORTCUTS.TSUMO,
+    ron: GAME_SHORTCUTS.RON,
+    pon: GAME_SHORTCUTS.PON,
+    chi: GAME_SHORTCUTS.CHI,
+    kan: GAME_SHORTCUTS.KAN,
+    pass: GAME_SHORTCUTS.PASS,
+    riichi: GAME_SHORTCUTS.RIICHI
+  };
+
   return (
     <div className="action-buttons">
       {timeLeft !== undefined && (
@@ -32,14 +44,21 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
       )}
       
       <div className="action-buttons__container">
-        {availableActions.map((action) => (
-          <button
+        {availableActions.map((action, index) => (
+          <motion.button
             key={action}
             className={`action-button action-button--${action}`}
             onClick={() => onAction(action)}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ delay: index * 0.1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            {actionLabels[action]}
-          </button>
+            <span className="action-button__label">{actionLabels[action]}</span>
+            <span className="action-button__shortcut">({actionShortcuts[action].toUpperCase()})</span>
+          </motion.button>
         ))}
       </div>
     </div>

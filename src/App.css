@@ -8,3 +8,21 @@
   overflow: hidden;
   position: relative;
 }
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .app {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Landscape mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .app {
+    height: 100vh;
+    min-height: 100vh;
+  }
+}

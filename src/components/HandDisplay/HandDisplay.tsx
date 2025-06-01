@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tile, Meld } from '../../types/mahjong';
 import TileComponent from '../Tile/Tile';
+import DraggableTile from '../DraggableTile/DraggableTile';
 import './HandDisplay.css';
 
 interface HandDisplayProps {
@@ -9,6 +10,8 @@ interface HandDisplayProps {
   isCurrentPlayer: boolean;
   position: string;
   onTileClick?: (tile: Tile) => void;
+  isDraggable?: boolean;
+  canDiscard?: boolean;
 }
 
 const HandDisplay: React.FC<HandDisplayProps> = ({
@@ -16,7 +19,9 @@ const HandDisplay: React.FC<HandDisplayProps> = ({
   melds,
   isCurrentPlayer,
   position,
-  onTileClick
+  onTileClick,
+  isDraggable = false,
+  canDiscard = false
 }) => {
   const sortedTiles = [...tiles].sort((a, b) => {
     if (a.suit !== b.suit) {
@@ -33,14 +38,24 @@ const HandDisplay: React.FC<HandDisplayProps> = ({
   return (
     <div className={`hand-display hand-display--${position}`}>
       <div className="hand-display__tiles">
-        {sortedTiles.map((tile) => (
-          <TileComponent
-            key={tile.id}
-            tile={tile}
-            faceUp={isCurrentPlayer}
-            onClick={onTileClick ? () => onTileClick(tile) : undefined}
-            size={position === 'bottom' ? 'large' : 'medium'}
-          />
+        {sortedTiles.map((tile, index) => (
+          isDraggable && isCurrentPlayer ? (
+            <DraggableTile
+              key={tile.id}
+              tile={tile}
+              index={index}
+              size={position === 'bottom' ? 'large' : 'medium'}
+              isDisabled={!canDiscard}
+            />
+          ) : (
+            <TileComponent
+              key={tile.id}
+              tile={tile}
+              faceUp={isCurrentPlayer}
+              onClick={onTileClick ? () => onTileClick(tile) : undefined}
+              size={position === 'bottom' ? 'large' : 'medium'}
+            />
+          )
         ))}
       </div>
       
