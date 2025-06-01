@@ -206,3 +206,38 @@ export type SpecificGameAction =
   | RiichiAction
   | WinAction
   | DecryptProofAction;
+
+// Post-game verification types
+export interface PostGameVerificationState {
+  phase: 'idle' | 'collecting-keys' | 'verifying' | 'completed' | 'failed';
+  progress: number; // 0-100
+  currentStep?: string;
+  collectedKeys: Record<PlayerID, string>; // playerId -> privateKey (base64)
+  verificationResult?: VerificationResult;
+  error?: string;
+}
+
+export interface VerificationResult {
+  success: boolean;
+  initialDeckValid: boolean;
+  actionsValid: boolean;
+  finalStateValid: boolean;
+  invalidActions: Array<{
+    actionId: string;
+    reason: string;
+    playerId: string;
+    timestamp: number;
+  }>;
+  playerHandHistories: Record<PlayerID, Tile[][]>; // Player -> array of hands at each turn
+  fullDeckDecrypted: Tile[];
+  verificationProof: string; // Signature of the verification result
+}
+
+export interface KeyDisclosureRequest {
+  gameId: string;
+  playerId: PlayerID;
+  publicKey: string;
+  privateKey: string;
+  timestamp: number;
+  signature: string;
+}

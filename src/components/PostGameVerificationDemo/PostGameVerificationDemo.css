@@ -1,0 +1,74 @@
+.post-game-verification-demo {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background: white;
+  min-height: 100vh;
+}
+
+.post-game-verification-demo h2 {
+  color: #333;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.demo-intro {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.demo-intro p {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.start-demo-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.start-demo-button:hover {
+  background-color: #45a049;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.demo-status {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.demo-status p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.reset-button {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.reset-button:hover {
+  background-color: #f57c00;
+}

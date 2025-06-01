@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { GameState, Wind, Action, Tile } from './types/mahjong';
 import MahjongTable from './components/MahjongTable/MahjongTable';
 import ActionButtons from './components/ActionButtons/ActionButtons';
 import GameStateDisplay from './components/GameStateDisplay/GameStateDisplay';
+import PostGameVerificationDemo from './components/PostGameVerificationDemo/PostGameVerificationDemo';
 import './App.css';
 
 function App() {
   const currentPlayer: Wind = 'E';
+  const [showVerificationDemo, setShowVerificationDemo] = useState(false);
   
   const generateMockTiles = (count: number, startId: number): Tile[] => {
     const tiles: Tile[] = [];
@@ -102,24 +104,36 @@ function App() {
 
   return (
     <div className="app">
-      <MahjongTable
-        gameState={gameState}
-        currentPlayer={currentPlayer}
-        onAction={handleAction}
-      />
-      
-      <GameStateDisplay
-        gameState={gameState}
-        currentPlayer={currentPlayer}
-      />
-      
-      {showActions && (
-        <ActionButtons
-          availableActions={availableActions}
-          onAction={handleActionButtonClick}
-          timeLeft={5}
-        />
+      {showVerificationDemo ? (
+        <PostGameVerificationDemo />
+      ) : (
+        <>
+          <MahjongTable
+            gameState={gameState}
+            currentPlayer={currentPlayer}
+            onAction={handleAction}
+          />
+          
+          <GameStateDisplay
+            gameState={gameState}
+            currentPlayer={currentPlayer}
+          />
+          
+          {showActions && (
+            <ActionButtons
+              availableActions={availableActions}
+              onAction={handleActionButtonClick}
+              timeLeft={5}
+            />
+          )}
+        </>
       )}
+      
+      <div className="demo-toggle">
+        <button onClick={() => setShowVerificationDemo(!showVerificationDemo)}>
+          {showVerificationDemo ? 'Show Original Demo' : 'Show Post-Game Verification Demo'}
+        </button>
+      </div>
     </div>
   );
 }

@@ -12,6 +12,7 @@ export * from './tileManager';
 export { ActionLogService } from './actionLog';
 export { VerificationManager } from './verificationManager';
 export { PostGameVerificationService } from './postGameVerification';
+export { PostGameVerificationManager } from './PostGameVerificationManager';
 
 // Type exports
 export * from '../types/tile';
