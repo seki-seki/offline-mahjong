@@ -1,0 +1,78 @@
+.tile {
+  background: #f5f5dc;
+  border: 1px solid #8b7355;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tile--small {
+  width: 20px;
+  height: 28px;
+  font-size: 10px;
+}
+
+.tile--medium {
+  width: 30px;
+  height: 42px;
+  font-size: 14px;
+}
+
+.tile--large {
+  width: 40px;
+  height: 56px;
+  font-size: 18px;
+}
+
+.tile--face-down {
+  background: #4a5d4a;
+  cursor: default;
+}
+
+.tile--face-up:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tile--dora {
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+}
+
+.tile--red .tile__text {
+  color: #dc143c !important;
+}
+
+.tile__content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile__text {
+  font-weight: bold;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+.tile__text--man {
+  color: #8b0000;
+}
+
+.tile__text--pin {
+  color: #000080;
+}
+
+.tile__text--sou {
+  color: #006400;
+}
+
+.tile__text--honor {
+  color: #4b0082;
+}

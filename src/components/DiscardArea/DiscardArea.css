@@ -1,0 +1,26 @@
+.discard-area {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.discard-area__row {
+  display: flex;
+  gap: 2px;
+}
+
+.discard-area--top {
+  transform: rotate(180deg);
+}
+
+.discard-area--left {
+  transform: rotate(-90deg);
+}
+
+.discard-area--right {
+  transform: rotate(90deg);
+}

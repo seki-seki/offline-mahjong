@@ -1,0 +1,64 @@
+.center-area {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.center-area__info {
+  display: flex;
+  gap: 20px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.center-area__round,
+.center-area__dealer,
+.center-area__remaining {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.center-area__dora {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.center-area__dora-label {
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.center-area__dora-tiles {
+  display: flex;
+  gap: 4px;
+}
+
+@media (max-width: 768px) {
+  .center-area {
+    padding: 12px;
+  }
+  
+  .center-area__info {
+    font-size: 14px;
+    gap: 10px;
+  }
+  
+  .center-area__round,
+  .center-area__dealer,
+  .center-area__remaining {
+    padding: 4px 8px;
+  }
+}
