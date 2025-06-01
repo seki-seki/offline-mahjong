@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { GameState, Wind, Action, Tile } from './types/mahjong';
 import MahjongTable from './components/MahjongTable/MahjongTable';
 import ActionButtons from './components/ActionButtons/ActionButtons';
 import GameStateDisplay from './components/GameStateDisplay/GameStateDisplay';
+import { GameLobby } from './components/GameLobby/GameLobby';
 import './App.css';
 
 function App() {
+  const [isInGame, setIsInGame] = useState(false);
   const currentPlayer: Wind = 'E';
   
   const generateMockTiles = (count: number, startId: number): Tile[] => {
@@ -99,6 +101,18 @@ function App() {
     console.log('Action button clicked:', action);
     setShowActions(false);
   };
+
+  const handleGameStart = () => {
+    setIsInGame(true);
+  };
+
+  if (!isInGame) {
+    return (
+      <div className="app">
+        <GameLobby onGameStart={handleGameStart} />
+      </div>
+    );
+  }
 
   return (
     <div className="app">

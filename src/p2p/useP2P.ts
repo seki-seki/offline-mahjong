@@ -17,6 +17,7 @@ export interface P2PState {
 }
 
 export interface UseP2PReturn extends P2PState {
+  p2p: P2PManager | null;
   initialize: (peerId?: string) => Promise<void>;
   connectToPeer: (peerId: string) => Promise<void>;
   sendMessage: (type: MessageType, data: any, targetPeerId?: string) => void;
@@ -24,6 +25,8 @@ export interface UseP2PReturn extends P2PState {
   on: (type: MessageType, handler: MessageHandler) => void;
   off: (type: MessageType, handler: MessageHandler) => void;
   destroy: () => void;
+  createGame: () => Promise<void>;
+  joinGame: (hostPeerId: string) => Promise<void>;
 }
 
 export function useP2P(): UseP2PReturn {
@@ -161,6 +164,12 @@ export function useP2P(): UseP2PReturn {
       updateConnectionStatus();
     });
 
+    // Handle player ready state changes
+    manager.on(MessageType.PLAYER_READY, (message) => {
+      manager.updatePlayerReady(message.data.playerId, message.data.isReady);
+      updatePlayers();
+    });
+
     // Update status periodically
     const statusInterval = setInterval(() => {
       updateConnectionStatus();
@@ -200,14 +209,34 @@ export function useP2P(): UseP2PReturn {
     };
   }, [destroy]);
 
+  // Create a new game (host)
+  const createGame = useCallback(async () => {
+    if (!managerRef.current) {
+      await initialize();
+    }
+    // Host is automatically created when initializing without a peer ID
+  }, [initialize]);
+
+  // Join an existing game
+  const joinGame = useCallback(async (hostPeerId: string) => {
+    if (!managerRef.current) {
+      await initialize();
+    }
+    await connectToPeer(hostPeerId);
+  }, [initialize, connectToPeer]);
+
   return {
     ...state,
+    p2p: managerRef.current,
+    peerId: state.peerId,
     initialize,
     connectToPeer,
     sendMessage,
     broadcastMessage,
     on,
     off,
-    destroy
+    destroy,
+    createGame,
+    joinGame
   };
 }

@@ -1,0 +1,305 @@
+.game-lobby {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.game-lobby h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #2c3e50;
+}
+
+.lobby-options {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+
+.create-room-btn {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-room-btn:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.create-room-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.join-room-section {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.join-room-section input {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  text-transform: uppercase;
+  width: 200px;
+}
+
+.join-room-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.join-room-btn:hover:not(:disabled) {
+  background-color: #229954;
+}
+
+.join-room-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #e74c3c;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Connected lobby styles */
+.game-lobby.connected {
+  max-width: 800px;
+}
+
+.room-info {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.room-info h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+.copy-btn {
+  padding: 0.5rem 1rem;
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.copy-btn:hover {
+  background-color: #7f8c8d;
+}
+
+.player-list {
+  background-color: #ffffff;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.player-list h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.player-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  background-color: #f8f9fa;
+  transition: all 0.3s;
+}
+
+.player-item.ready {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+.player-name {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.player-status {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.player-item.ready .player-status {
+  color: #155724;
+}
+
+.game-settings {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.game-settings h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.game-mode-selector {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.game-mode-selector label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.game-mode-selector input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.lobby-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ready-btn {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.ready-btn:hover {
+  background-color: #e67e22;
+}
+
+.ready-btn.ready {
+  background-color: #27ae60;
+}
+
+.ready-btn.ready:hover {
+  background-color: #229954;
+}
+
+.start-game-btn {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.start-game-btn:hover:not(:disabled) {
+  background-color: #c0392b;
+}
+
+.start-game-btn:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.waiting-message {
+  margin-top: 2rem;
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+/* Loading state */
+.game-lobby.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  font-size: 1.2rem;
+  color: #7f8c8d;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .game-lobby {
+    padding: 1rem;
+  }
+
+  .game-lobby h1 {
+    font-size: 2rem;
+  }
+
+  .join-room-section {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .join-room-section input {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .join-room-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .room-info {
+    flex-direction: column;
+  }
+
+  .lobby-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .ready-btn,
+  .start-game-btn {
+    width: 100%;
+  }
+}

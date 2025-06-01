@@ -19,6 +19,7 @@ export class P2PManager {
   private pingIntervals: Map<string, ReturnType<typeof setInterval>> = new Map();
   private messageSequence: number = 0;
   private reconnectAttempts: Map<string, number> = new Map();
+  private myReadyState: boolean = false;
 
   constructor(config?: Partial<P2PConfig>) {
     this.config = {
@@ -292,7 +293,15 @@ export class P2PManager {
 
   // Get connected players
   getPlayers(): PlayerInfo[] {
-    return Array.from(this.players.values());
+    // Include self in the player list
+    const allPlayers = [this.getMyPlayerInfo()];
+    
+    // Add other players
+    this.players.forEach(player => {
+      allPlayers.push(player);
+    });
+    
+    return allPlayers;
   }
 
   // Get my player info
@@ -301,9 +310,30 @@ export class P2PManager {
       id: this.myId,
       name: `Player ${this.isHost ? 1 : this.players.size + 1}`,
       position: this.isHost ? 0 : this.players.size,
-      isReady: true,
-      isConnected: true
+      isReady: this.myReadyState,
+      isConnected: true,
+      isHost: this.isHost
     };
+  }
+
+  // Update player ready state
+  updatePlayerReady(playerId: string, isReady: boolean): void {
+    if (playerId === this.myId) {
+      // Update own ready state
+      this.myReadyState = isReady;
+      
+      // Broadcast the update
+      this.broadcastMessage(MessageType.PLAYER_READY, {
+        playerId: this.myId,
+        isReady
+      });
+    } else {
+      // Update other player's ready state
+      const player = this.players.get(playerId);
+      if (player) {
+        player.isReady = isReady;
+      }
+    }
   }
 
   // Get connection status
