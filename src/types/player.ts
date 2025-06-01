@@ -22,6 +22,8 @@ export interface Player {
   riichi: boolean;
   points: number;
   connectionId?: string;
+  isReady?: boolean;
+  isConnected?: boolean;
 }
 
 export interface Meld {
@@ -36,6 +38,9 @@ export interface ActionRequest {
   tile?: Tile;
   tiles?: Tile[];
   targetTile?: Tile;
+  targetTileId?: string;
+  tileId?: string;
+  timestamp?: number;
 }
 
 export interface ActionResponse {

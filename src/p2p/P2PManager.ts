@@ -290,10 +290,6 @@ export class P2PManager {
     }
   }
 
-  // Get connected players
-  getPlayers(): PlayerInfo[] {
-    return Array.from(this.players.values());
-  }
 
   // Get my player info
   getMyPlayerInfo(): PlayerInfo {
@@ -351,5 +347,17 @@ export class P2PManager {
   // Check if this peer is the host
   getIsHost(): boolean {
     return this.isHost;
+  }
+
+  // Get local peer ID
+  getLocalPeerId(): string {
+    return this.myId;
+  }
+
+  // Get all players
+  getPlayers(): PlayerInfo[] {
+    const allPlayers = [this.getMyPlayerInfo()];
+    this.players.forEach(player => allPlayers.push(player));
+    return allPlayers;
   }
 }

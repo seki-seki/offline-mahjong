@@ -471,8 +471,9 @@ export class GameManager {
     this.eventHandlers.forEach(handler => handler(event));
   }
 
-  public onEvent(eventType: string, handler: (event: GameEvent) => void): void {
-    this.eventHandlers.set(eventType, handler);
+  public onEvent(handler: (event: GameEvent) => void): void {
+    const id = Date.now().toString();
+    this.eventHandlers.set(id, handler);
   }
 
   public getGameState(): GameState {
@@ -492,5 +493,56 @@ export class GameManager {
         hand: p.id === playerId ? p.hand : p.hand.map(() => null)
       }))
     };
+  }
+
+  public getState(): GameState {
+    return this.getGameState();
+  }
+
+  public getGameId(): string {
+    return this.gameState.id;
+  }
+
+  public async setPlayerReady(playerId: string, ready: boolean): Promise<void> {
+    const player = this.gameState.players.find(p => p.id === playerId);
+    if (player) {
+      player.isReady = ready;
+      this.emitEvent({
+        type: 'player-ready',
+        playerId,
+        data: { ready },
+        timestamp: Date.now()
+      });
+    }
+  }
+
+  public areAllPlayersReady(): boolean {
+    return this.gameState.players.every(p => p.isReady);
+  }
+
+  public async syncState(newState: GameState): Promise<void> {
+    this.gameState = { ...newState };
+    this.emitEvent({
+      type: 'state-synced',
+      data: { state: newState },
+      timestamp: Date.now()
+    });
+  }
+
+  public async handlePlayerDisconnect(playerId: string): Promise<void> {
+    const player = this.gameState.players.find(p => p.id === playerId);
+    if (player) {
+      player.isConnected = false;
+      this.emitEvent({
+        type: 'player-disconnected',
+        playerId,
+        data: {},
+        timestamp: Date.now()
+      });
+    }
+  }
+
+  public isPlayerInGame(playerId: string): boolean {
+    return this.gameState.players.some(p => p.id === playerId);
   }
 }
