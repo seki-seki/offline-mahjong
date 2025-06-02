@@ -5,10 +5,18 @@ import ActionButtons from './components/ActionButtons/ActionButtons';
 import GameStateDisplay from './components/GameStateDisplay/GameStateDisplay';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import { DebugPanel } from './components/DebugPanel/DebugPanel';
+<<<<<<< HEAD
+import { GameLobby } from './components/GameLobby/GameLobby';
+=======
+>>>>>>> origin/main
 import { useP2P } from './p2p/useP2P';
 import './App.css';
 
 function App() {
+<<<<<<< HEAD
+  const [isInGame, setIsInGame] = useState(false);
+=======
+>>>>>>> origin/main
   const currentPlayer: Wind = 'E';
   const { state: p2pState, error: p2pError } = useP2P();
   
@@ -104,6 +112,23 @@ function App() {
     setShowActions(false);
   };
 
+<<<<<<< HEAD
+  const handleGameStart = () => {
+    setIsInGame(true);
+  };
+
+  if (!isInGame) {
+    return (
+      <ErrorBoundary>
+        <div className="app">
+          <GameLobby onGameStart={handleGameStart} />
+        </div>
+      </ErrorBoundary>
+    );
+  }
+
+=======
+>>>>>>> origin/main
   return (
     <ErrorBoundary>
       <div className="app">

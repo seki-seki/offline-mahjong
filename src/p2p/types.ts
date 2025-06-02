@@ -42,6 +42,7 @@ export interface PlayerInfo {
   position: number; // 0-3 for East, South, West, North
   isReady: boolean;
   isConnected: boolean;
+  isHost?: boolean;
   publicKey?: string; // For encryption
 }
 

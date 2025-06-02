@@ -7,6 +7,8 @@
   justify-content: center;
   overflow: hidden;
   position: relative;
+<<<<<<< HEAD
+=======
 }
 
 .error-notification {
@@ -32,4 +34,5 @@
     transform: translateX(0);
     opacity: 1;
   }
+>>>>>>> origin/main
 }

@@ -103,12 +103,18 @@ export function P2PConnection() {
               value={connectPeerId}
               onChange={(e) => setConnectPeerId(e.target.value)}
               style={{ marginRight: '10px', padding: '5px' }}
+<<<<<<< HEAD
+=======
               data-testid="connect-peer-id"
+>>>>>>> origin/main
             />
             <button 
               onClick={handleJoinGame}
               disabled={!connectPeerId.trim() || isConnecting}
+<<<<<<< HEAD
+=======
               data-testid="connect-button"
+>>>>>>> origin/main
             >
               {isConnecting ? 'Joining...' : 'Join Game'}
             </button>
@@ -130,7 +136,11 @@ export function P2PConnection() {
       
       <div style={{ marginBottom: '20px' }}>
         <div>
+<<<<<<< HEAD
+          <strong>Your Peer ID:</strong> {p2p.peerId}
+=======
           <strong>Your Peer ID:</strong> <span data-testid="peer-id">{p2p.peerId}</span>
+>>>>>>> origin/main
           <button onClick={copyPeerId} style={{ marginLeft: '10px' }}>
             Copy
           </button>
@@ -139,8 +149,13 @@ export function P2PConnection() {
       </div>
 
       <div style={{ marginBottom: '20px' }}>
+<<<<<<< HEAD
+        <h3>Connected Players ({p2p.players.length + 1}/4)</h3>
+        <ul>
+=======
         <h3>Connected Players <span data-testid="connected-players">{p2p.players.length + 1} / 4</span></h3>
         <ul data-testid="player-list">
+>>>>>>> origin/main
           <li>You (Position: {p2p.isHost ? 0 : p2p.players.length})</li>
           {p2p.players.map(player => (
             <li key={player.id}>
@@ -179,15 +194,29 @@ export function P2PConnection() {
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           style={{ marginRight: '10px', padding: '5px' }}
+<<<<<<< HEAD
+        />
+        <button onClick={handleSendMessage}>
+=======
           data-testid="test-message-input"
         />
         <button onClick={handleSendMessage} data-testid="send-test-message">
+>>>>>>> origin/main
           Broadcast
         </button>
       </div>
 
       <div>
         <h3>Messages</h3>
+<<<<<<< HEAD
+        <div style={{ 
+          border: '1px solid #ccc', 
+          padding: '10px', 
+          height: '200px', 
+          overflowY: 'auto',
+          backgroundColor: '#f5f5f5'
+        }}>
+=======
         <div 
           data-testid="received-messages"
           style={{ 
@@ -198,6 +227,7 @@ export function P2PConnection() {
             backgroundColor: '#f5f5f5'
           }}
         >
+>>>>>>> origin/main
           {receivedMessages.map((msg, index) => (
             <div key={index}>{msg}</div>
           ))}

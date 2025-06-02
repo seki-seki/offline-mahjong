@@ -21,6 +21,7 @@ export interface P2PState {
 export interface UseP2PReturn {
   state: P2PState;
   error: string | null;
+  p2p: P2PManager | null;
   initialize: (peerId?: string) => Promise<void>;
   connectToPeer: (peerId: string) => Promise<void>;
   sendMessage: (type: MessageType, data: any, targetPeerId?: string) => void;
@@ -28,6 +29,8 @@ export interface UseP2PReturn {
   on: (type: MessageType, handler: MessageHandler) => void;
   off: (type: MessageType, handler: MessageHandler) => void;
   destroy: () => void;
+  createGame: () => Promise<void>;
+  joinGame: (hostPeerId: string) => Promise<void>;
 }
 
 export function useP2P(): UseP2PReturn {
@@ -74,7 +77,6 @@ export function useP2P(): UseP2PReturn {
         : err instanceof Error 
         ? err.message 
         : 'P2P接続の初期化に失敗しました';
-        
       setState(prev => ({
         ...prev,
         error: errorMessage
@@ -100,7 +102,6 @@ export function useP2P(): UseP2PReturn {
         : err instanceof Error 
         ? err.message 
         : 'ピアへの接続に失敗しました';
-        
       setState(prev => ({
         ...prev,
         error: errorMessage
@@ -112,6 +113,12 @@ export function useP2P(): UseP2PReturn {
   // Send message
   const sendMessage = useCallback((type: MessageType, data: any, targetPeerId?: string) => {
     if (!managerRef.current) {
+<<<<<<< HEAD
+      console.error('P2P not initialized');
+      return;
+    }
+    managerRef.current.sendMessage(type, data, targetPeerId);
+=======
       logger.error('P2P not initialized');
       return;
     }
@@ -125,6 +132,7 @@ export function useP2P(): UseP2PReturn {
         : 'メッセージの送信に失敗しました';
       setState(prev => ({ ...prev, error: errorMessage }));
     }
+>>>>>>> origin/main
   }, []);
 
   // Broadcast message
@@ -190,6 +198,12 @@ export function useP2P(): UseP2PReturn {
       updateConnectionStatus();
     });
 
+    // Handle player ready state changes
+    manager.on(MessageType.PLAYER_READY, (message) => {
+      manager.updatePlayerReady(message.data.playerId, message.data.isReady);
+      updatePlayers();
+    });
+
     // Handle connection status updates
     manager.on(MessageType.CONNECTION_STATUS, () => {
       updatePlayers();
@@ -235,22 +249,34 @@ export function useP2P(): UseP2PReturn {
     };
   }, [destroy]);
 
+  // Create a new game (host)
+  const createGame = useCallback(async () => {
+    if (!managerRef.current) {
+      await initialize();
+    }
+    // Host is automatically created when initializing without a peer ID
+  }, [initialize]);
+
+  // Join an existing game
+  const joinGame = useCallback(async (hostPeerId: string) => {
+    if (!managerRef.current) {
+      await initialize();
+    }
+    await connectToPeer(hostPeerId);
+  }, [initialize, connectToPeer]);
+
   return {
-    state: {
-      isConnected: state.isConnected,
-      peerId: state.peerId,
-      isHost: state.isHost,
-      players: state.players,
-      connectionStatus: state.connectionStatus,
-      error: state.error
-    },
+    state,
     error: state.error,
+    p2p: managerRef.current,
     initialize,
     connectToPeer,
     sendMessage,
     broadcastMessage,
     on,
     off,
-    destroy
+    destroy,
+    createGame,
+    joinGame
   };
 }

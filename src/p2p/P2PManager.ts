@@ -21,6 +21,10 @@ export class P2PManager {
   private pingIntervals: Map<string, ReturnType<typeof setInterval>> = new Map();
   private messageSequence: number = 0;
   private reconnectAttempts: Map<string, number> = new Map();
+<<<<<<< HEAD
+  private myReadyState: boolean = false;
+=======
+>>>>>>> origin/main
 
   constructor(config?: Partial<P2PConfig>) {
     this.config = {
@@ -36,6 +40,15 @@ export class P2PManager {
   async initialize(peerId?: string): Promise<string> {
     return new Promise((resolve, reject) => {
       try {
+<<<<<<< HEAD
+        // Use provided ID or generate new one
+        this.peer = peerId ? new Peer(peerId) : new Peer();
+        
+        this.peer.on('open', (id) => {
+          this.myId = id;
+          this.isHost = !peerId;
+          console.log(`P2P initialized with ID: ${id}`);
+=======
         logger.info('Initializing P2P connection', { peerId, isHost: !peerId });
         
         // Use provided ID or generate new one
@@ -57,15 +70,27 @@ export class P2PManager {
           this.myId = id;
           this.isHost = !peerId;
           logger.info(`P2P initialized successfully`, { id, isHost: this.isHost });
+>>>>>>> origin/main
           resolve(id);
         });
 
         this.peer.on('connection', (conn) => {
+<<<<<<< HEAD
+=======
           logger.debug('Incoming connection', { peerId: conn.peer });
+>>>>>>> origin/main
           this.handleIncomingConnection(conn);
         });
 
         this.peer.on('error', (err) => {
+<<<<<<< HEAD
+          console.error('Peer error:', err);
+          reject(err);
+        });
+
+        this.peer.on('disconnected', () => {
+          console.warn('Disconnected from signaling server');
+=======
           clearTimeout(initTimeout);
           const error = new P2PError(
             ErrorCode.P2P_CONNECTION_FAILED,
@@ -78,10 +103,14 @@ export class P2PManager {
 
         this.peer.on('disconnected', () => {
           logger.warn('Disconnected from signaling server');
+>>>>>>> origin/main
           this.attemptReconnect();
         });
 
       } catch (error) {
+<<<<<<< HEAD
+        reject(error);
+=======
         const p2pError = new P2PError(
           ErrorCode.P2P_CONNECTION_FAILED,
           `Failed to initialize P2P: ${error}`,
@@ -89,12 +118,19 @@ export class P2PManager {
         );
         logger.error('P2P initialization failed', p2pError);
         reject(p2pError);
+>>>>>>> origin/main
       }
     });
   }
 
   // Connect to another peer
   async connectToPeer(peerId: string): Promise<void> {
+<<<<<<< HEAD
+    if (!this.peer) throw new Error('P2P not initialized');
+    if (this.connections.has(peerId)) return;
+
+    return new Promise((resolve, reject) => {
+=======
     if (!this.peer) {
       throw new P2PError(
         ErrorCode.P2P_CONNECTION_FAILED,
@@ -111,11 +147,15 @@ export class P2PManager {
     return new Promise((resolve, reject) => {
       logger.info('Connecting to peer', { peerId });
       
+>>>>>>> origin/main
       const conn = this.peer!.connect(peerId, {
         reliable: true,
         serialization: 'json'
       });
 
+<<<<<<< HEAD
+      conn.on('open', () => {
+=======
       const connectionTimeout = setTimeout(() => {
         if (!conn.open) {
           conn.close();
@@ -132,11 +172,25 @@ export class P2PManager {
       conn.on('open', () => {
         clearTimeout(connectionTimeout);
         logger.info('Connected to peer successfully', { peerId });
+>>>>>>> origin/main
         this.setupConnection(conn);
         resolve();
       });
 
       conn.on('error', (err) => {
+<<<<<<< HEAD
+        console.error(`Connection error with ${peerId}:`, err);
+        reject(err);
+      });
+
+      // Timeout for connection
+      setTimeout(() => {
+        if (!conn.open) {
+          conn.close();
+          reject(new Error(`Connection timeout for peer ${peerId}`));
+        }
+      }, this.config.messageTimeout);
+=======
         clearTimeout(connectionTimeout);
         const error = new P2PError(
           ErrorCode.P2P_CONNECTION_FAILED,
@@ -146,6 +200,7 @@ export class P2PManager {
         logger.error('Connection error', error);
         reject(error);
       });
+>>>>>>> origin/main
     });
   }
 
@@ -346,7 +401,19 @@ export class P2PManager {
 
   // Get connected players
   getPlayers(): PlayerInfo[] {
+<<<<<<< HEAD
+    // Include self in the player list
+    const allPlayers = [this.getMyPlayerInfo()];
+    
+    // Add other players
+    this.players.forEach(player => {
+      allPlayers.push(player);
+    });
+    
+    return allPlayers;
+=======
     return Array.from(this.players.values());
+>>>>>>> origin/main
   }
 
   // Get my player info
@@ -355,11 +422,40 @@ export class P2PManager {
       id: this.myId,
       name: `Player ${this.isHost ? 1 : this.players.size + 1}`,
       position: this.isHost ? 0 : this.players.size,
+<<<<<<< HEAD
+      isReady: this.myReadyState,
+      isConnected: true,
+      isHost: this.isHost
+    };
+  }
+
+  // Update player ready state
+  updatePlayerReady(playerId: string, isReady: boolean): void {
+    if (playerId === this.myId) {
+      // Update own ready state
+      this.myReadyState = isReady;
+      
+      // Broadcast the update
+      this.broadcastMessage(MessageType.PLAYER_READY, {
+        playerId: this.myId,
+        isReady
+      });
+    } else {
+      // Update other player's ready state
+      const player = this.players.get(playerId);
+      if (player) {
+        player.isReady = isReady;
+      }
+    }
+  }
+
+=======
       isReady: true,
       isConnected: true
     };
   }
 
+>>>>>>> origin/main
   // Get connection status
   getConnectionStatus(): ConnectionStatus[] {
     return Array.from(this.connections.entries()).map(([peerId, conn]) => ({
