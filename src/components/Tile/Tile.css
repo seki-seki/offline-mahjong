@@ -76,3 +76,45 @@
 .tile__text--honor {
   color: #4b0082;
 }
+
+/* Mobile responsive tile sizes */
+@media (max-width: 600px) {
+  .tile--small {
+    width: 18px;
+    height: 25px;
+    font-size: 9px;
+  }
+  
+  .tile--medium {
+    width: 26px;
+    height: 36px;
+    font-size: 12px;
+  }
+  
+  .tile--large {
+    width: 32px;
+    height: 45px;
+    font-size: 15px;
+  }
+}
+
+/* Landscape mobile - even smaller tiles */
+@media (max-height: 600px) and (orientation: landscape) {
+  .tile--small {
+    width: 16px;
+    height: 22px;
+    font-size: 8px;
+  }
+  
+  .tile--medium {
+    width: 22px;
+    height: 31px;
+    font-size: 10px;
+  }
+  
+  .tile--large {
+    width: 28px;
+    height: 39px;
+    font-size: 13px;
+  }
+}

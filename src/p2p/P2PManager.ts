@@ -95,6 +95,12 @@ export class P2PManager {
 
   // Connect to another peer
   async connectToPeer(peerId: string): Promise<void> {
+<<<<<<< HEAD
+    if (!this.peer) throw new Error('P2P not initialized');
+    if (this.connections.has(peerId)) return;
+
+    return new Promise((resolve, reject) => {
+=======
     if (!this.peer) {
       throw new P2PError(
         ErrorCode.P2P_CONNECTION_FAILED,
@@ -137,6 +143,24 @@ export class P2PManager {
       });
 
       conn.on('error', (err) => {
+        clearTimeout(connectionTimeout);
+        const error = new P2PError(
+          ErrorCode.P2P_CONNECTION_FAILED,
+          `Connection error with ${peerId}: ${err.message || err}`,
+          { originalError: err, peerId }
+        );
+        logger.error('Connection error', error);
+        reject(error);
+      });
+
+      // Timeout for connection
+      setTimeout(() => {
+        if (!conn.open) {
+          conn.close();
+          reject(new Error(`Connection timeout for peer ${peerId}`));
+        }
+      }, this.config.messageTimeout);
+=======
         clearTimeout(connectionTimeout);
         const error = new P2PError(
           ErrorCode.P2P_CONNECTION_FAILED,

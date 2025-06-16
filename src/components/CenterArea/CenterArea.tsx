@@ -6,7 +6,7 @@ import './CenterArea.css';
 interface CenterAreaProps {
   remainingTiles: number;
   dora: Tile[];
-  round: number;
+  round: { wind: Wind; number: number } | number;
   dealer: Wind;
 }
 
@@ -24,10 +24,14 @@ const CenterArea: React.FC<CenterAreaProps> = ({
   };
   
   const getRoundDisplay = () => {
-    const windRound = Math.floor((round - 1) / 4);
-    const handNumber = ((round - 1) % 4) + 1;
-    const winds = ['東', '南', '西', '北'];
-    return `${winds[windRound]}${handNumber}局`;
+    if (typeof round === 'object') {
+      return `${windMap[round.wind]}${round.number}局`;
+    } else {
+      const windRound = Math.floor((round - 1) / 4);
+      const handNumber = ((round - 1) % 4) + 1;
+      const winds = ['東', '南', '西', '北'];
+      return `${winds[windRound]}${handNumber}局`;
+    }
   };
 
   return (

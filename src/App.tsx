@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import { DndProvider } from 'react-dnd';
 import { GameState, Wind, Action, Tile } from './types/mahjong';
 import MahjongTable from './components/MahjongTable/MahjongTable';
 import ActionButtons from './components/ActionButtons/ActionButtons';
 import GameStateDisplay from './components/GameStateDisplay/GameStateDisplay';
+import KeyboardHelp from './components/KeyboardHelp/KeyboardHelp';
+import { getDndBackend, getDndBackendOptions } from './utils/dndBackend';
+import { useKeyboardShortcuts, GAME_SHORTCUTS } from './hooks/useKeyboardShortcuts';
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary';
 import { DebugPanel } from './components/DebugPanel/DebugPanel';
 import { useP2P } from './p2p/useP2P';
@@ -26,7 +30,7 @@ function App() {
 
   const [gameState] = useState<GameState>({
     phase: 'playing',
-    round: 1,
+    round: { wind: 'E', number: 1 },
     dealer: 'E',
     currentTurn: 'E',
     turnPhase: 'discard',
@@ -34,6 +38,8 @@ function App() {
     dora: [
       { id: 'dora-1', suit: 'pin', value: 5 }
     ],
+    honba: 2,
+    riichiBets: 1,
     players: {
       'E': {
         id: 'player-1',
@@ -90,6 +96,7 @@ function App() {
 
   const [availableActions] = useState<Action[]>(['riichi', 'pass']);
   const [showActions, setShowActions] = useState(false);
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
   const handleAction = (action: string, data?: { tile?: Tile }) => {
     console.log('Action:', action, data);
@@ -104,8 +111,22 @@ function App() {
     setShowActions(false);
   };
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    [GAME_SHORTCUTS.PASS]: () => showActions && handleActionButtonClick('pass'),
+    [GAME_SHORTCUTS.RIICHI]: () => showActions && availableActions.includes('riichi') && handleActionButtonClick('riichi'),
+    [GAME_SHORTCUTS.PON]: () => showActions && availableActions.includes('pon') && handleActionButtonClick('pon'),
+    [GAME_SHORTCUTS.CHI]: () => showActions && availableActions.includes('chi') && handleActionButtonClick('chi'),
+    [GAME_SHORTCUTS.KAN]: () => showActions && availableActions.includes('kan') && handleActionButtonClick('kan'),
+    [GAME_SHORTCUTS.RON]: () => showActions && availableActions.includes('ron') && handleActionButtonClick('ron'),
+    [GAME_SHORTCUTS.TSUMO]: () => showActions && availableActions.includes('tsumo') && handleActionButtonClick('tsumo'),
+    '?': () => setShowKeyboardHelp(true),
+    'escape': () => setShowKeyboardHelp(false),
+  }, true);
+
   return (
     <ErrorBoundary>
+      <DndProvider backend={getDndBackend()} options={getDndBackendOptions()}>
       <div className="app">
         <MahjongTable
           gameState={gameState}
@@ -126,6 +147,11 @@ function App() {
           />
         )}
         
+        <KeyboardHelp
+          isVisible={showKeyboardHelp}
+          onClose={() => setShowKeyboardHelp(false)}
+        />
+        
         {p2pError && (
           <div className="error-notification">
             {p2pError}
@@ -138,6 +164,7 @@ function App() {
           showTileInfo={process.env.NODE_ENV === 'development'}
         />
       </div>
+    </DndProvider>
     </ErrorBoundary>
   );
 }

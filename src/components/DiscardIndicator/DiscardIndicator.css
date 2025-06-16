@@ -1,0 +1,60 @@
+.discard-indicator {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.discard-indicator__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.discard-indicator__label {
+  color: white;
+  font-weight: 600;
+}
+
+/* Type styles */
+.discard-indicator--tsumo-giri .discard-indicator__dot {
+  background: #fbbf24;
+  box-shadow: 0 0 4px #fbbf24;
+}
+
+.discard-indicator--tedashi .discard-indicator__dot {
+  background: #60a5fa;
+  box-shadow: 0 0 4px #60a5fa;
+}
+
+/* Position styles */
+.discard-indicator--bottom {
+  bottom: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.discard-indicator--top {
+  top: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.discard-indicator--left {
+  left: -4rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.discard-indicator--right {
+  right: -4rem;
+  top: 50%;
+  transform: translateY(-50%);
+}

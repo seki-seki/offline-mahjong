@@ -11,6 +11,24 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Color variables */
+  --primary-color: #4ade80;
+  --secondary-color: #60a5fa;
+  --background-color: #242424;
+  --surface-color: #1a1a1a;
+  --border-color: #333;
+  --text-primary: rgba(255, 255, 255, 0.87);
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --success-color: #4ade80;
+  --danger-color: #f87171;
+  --warning-color: #fbbf24;
+  
+  /* Tile colors */
+  --tile-bg: #f5f5f5;
+  --tile-border: #ccc;
+  --tile-back: #2d4a2b;
+  --tile-back-text: #8fbc8f;
 }
 
 * {

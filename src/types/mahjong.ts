@@ -33,15 +33,23 @@ export interface Meld {
 export type GamePhase = 'waiting' | 'playing' | 'ended';
 export type TurnPhase = 'draw' | 'discard' | 'action';
 
+export interface RoundInfo {
+  wind: Wind;
+  number: number;
+}
+
 export interface GameState {
   phase: GamePhase;
-  round: number;
+  round: RoundInfo;
   dealer: Wind;
   currentTurn: Wind;
   turnPhase: TurnPhase;
   remainingTiles: number;
   dora: Tile[];
+  uraDora?: Tile[];
   players: Record<Wind, Player>;
+  honba?: number;
+  riichiBets?: number;
 }
 
 export type Action = 'tsumo' | 'ron' | 'pon' | 'chi' | 'kan' | 'pass' | 'riichi';

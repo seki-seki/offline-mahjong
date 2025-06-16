@@ -1,5 +1,5 @@
 import React from 'react';
-import { Player, TurnPhase } from '../../types/mahjong';
+import { Player, TurnPhase, Tile } from '../../types/mahjong';
 import HandDisplay from '../HandDisplay/HandDisplay';
 import DiscardArea from '../DiscardArea/DiscardArea';
 import PlayerInfo from '../PlayerInfo/PlayerInfo';

@@ -1,0 +1,12 @@
+.draggable-tile {
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.draggable-tile.dragging {
+  cursor: grabbing;
+}
+
+.draggable-tile:not(.dragging):hover {
+  z-index: 10;
+}
